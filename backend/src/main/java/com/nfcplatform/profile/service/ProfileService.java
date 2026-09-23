@@ -10,6 +10,7 @@ import com.nfcplatform.common.exception.ResourceNotFoundException;
 import com.nfcplatform.common.exception.ValidationException;
 import com.nfcplatform.common.util.Slugify;
 import com.nfcplatform.config.AppProperties;
+import com.nfcplatform.destination.service.DestinationUrlValidator;
 import com.nfcplatform.profile.dto.*;
 import com.nfcplatform.profile.entity.BusinessHour;
 import com.nfcplatform.profile.entity.CompanyProfile;
@@ -104,11 +105,11 @@ public class ProfileService {
             profile.setPhone(request.phone());
             profile.setWhatsapp(request.whatsapp());
             profile.setEmail(request.email());
-            profile.setWebsite(request.website());
+            profile.setWebsite(normalizeLinkUrl(request.website()));
             profile.setAddress(request.address());
             profile.setCity(request.city());
             profile.setCountry(request.country());
-            profile.setGoogleMapsUrl(request.googleMapsUrl());
+            profile.setGoogleMapsUrl(normalizeLinkUrl(request.googleMapsUrl()));
             profile.setRegistrationNumber(request.registrationNumber());
             return toResponse(companyProfileRepository.save(profile));
         }
@@ -155,7 +156,7 @@ public class ProfileService {
             SocialLink link = new SocialLink();
             link.setClientId(client.getId());
             link.setPlatform(parsePlatform(dto.platform()));
-            link.setUrl(dto.url());
+            link.setUrl(normalizeLinkUrl(dto.url()));
             link.setDisplayOrder(dto.displayOrder());
             link.setEnabled(dto.enabled());
             return socialLinkRepository.save(link);
@@ -413,9 +414,23 @@ public class ProfileService {
         phone.set(request.phone());
         whatsapp.set(request.whatsapp());
         email.set(request.email());
-        website.set(request.website());
+        website.set(normalizeLinkUrl(request.website()));
         address.set(request.address());
         city.set(request.city());
         country.set(request.country());
+    }
+
+    /**
+     * Links shown on the public profile and in the vCard must be plain http(s) - rejects
+     * javascript:/data: and similar. A bare "example.com" is accepted as https://example.com.
+     */
+    private static String normalizeLinkUrl(String url) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+        String trimmed = url.trim();
+        String candidate = trimmed.contains("://") ? trimmed : "https://" + trimmed;
+        DestinationUrlValidator.validate(candidate);
+        return candidate;
     }
 }

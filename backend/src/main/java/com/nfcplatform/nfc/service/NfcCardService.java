@@ -100,6 +100,11 @@ public class NfcCardService {
         Destination destination = destinationRepository.findByUuidAndClientId(request.destinationUuid(), client.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Destination was not found for this client"));
 
+        if (card.getStatus() == NfcCardStatus.REPLACED) {
+            // A replaced card is typically lost/damaged - it must never start resolving again.
+            throw new ValidationException("This card has been replaced and can no longer be used");
+        }
+
         boolean isNewAssignmentForClient = card.getClientId() == null || !card.getClientId().equals(client.getId());
         if (isNewAssignmentForClient) {
             subscriptionService.assertCanAssignCard(client.getId());
@@ -133,6 +138,9 @@ public class NfcCardService {
     public NfcCardRegisterResponse replace(String uuid, NfcCardReplaceRequest request, UserPrincipal actor, HttpServletRequest httpRequest) {
         NfcCard oldCard = nfcCardRepository.findByUuid(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("NFC card was not found"));
+        if (oldCard.getStatus() == NfcCardStatus.REPLACED) {
+            throw new ValidationException("This card has already been replaced");
+        }
         if (oldCard.getClientId() == null || oldCard.getDestinationId() == null) {
             throw new ValidationException("This card has no client/destination assignment to carry over - register a new card instead");
         }
@@ -167,6 +175,11 @@ public class NfcCardService {
         NfcCard card = nfcCardRepository.findByUuid(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("NFC card was not found"));
         NfcCardStatus status = parseStatus(newStatus);
+
+        if (card.getStatus() == NfcCardStatus.REPLACED) {
+            // A replaced card is typically lost/damaged - it must never start resolving again.
+            throw new ValidationException("This card has been replaced - its status can no longer be changed");
+        }
 
         if (status == NfcCardStatus.ACTIVE && (card.getClientId() == null || card.getDestinationId() == null)) {
             throw new ValidationException("Card must be assigned to a client and destination before activation");

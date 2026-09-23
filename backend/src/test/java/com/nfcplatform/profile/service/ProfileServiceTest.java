@@ -172,6 +172,31 @@ class ProfileServiceTest {
     }
 
     @Test
+    void updateProfileRejectsANonHttpWebsiteLinkSoItCanNeverRunOnThePublicPage() {
+        UserPrincipal actor = principal();
+        Client client = client(ClientType.INDIVIDUAL, "Jane Doe");
+        when(clientRepository.findByOwnerUserIdAndDeletedAtIsNull(OWNER_USER_ID)).thenReturn(Optional.of(client));
+        when(individualProfileRepository.findByClientId(CLIENT_ID)).thenReturn(Optional.of(individualProfile()));
+        when(individualProfileRepository.existsBySlugAndClientIdNot(any(), eq(CLIENT_ID))).thenReturn(false);
+
+        assertThatThrownBy(() -> profileService.updateOwnProfile(actor, websiteRequest("javascript:alert(document.cookie)")))
+                .isInstanceOf(ValidationException.class);
+    }
+
+    @Test
+    void updateProfileAcceptsABareDomainWebsiteAsHttps() {
+        UserPrincipal actor = principal();
+        Client client = client(ClientType.INDIVIDUAL, "Jane Doe");
+        when(clientRepository.findByOwnerUserIdAndDeletedAtIsNull(OWNER_USER_ID)).thenReturn(Optional.of(client));
+        when(individualProfileRepository.findByClientId(CLIENT_ID)).thenReturn(Optional.of(individualProfile()));
+        when(individualProfileRepository.existsBySlugAndClientIdNot(any(), eq(CLIENT_ID))).thenReturn(false);
+
+        ProfileResponse response = profileService.updateOwnProfile(actor, websiteRequest("www.example.com"));
+
+        assertThat(response.website()).isEqualTo("https://www.example.com");
+    }
+
+    @Test
     void updateProfileRejectsABlankCompanyNameForABusinessClient() {
         UserPrincipal actor = principal();
         Client client = client(ClientType.BUSINESS, "Acme Ltd");
@@ -297,6 +322,11 @@ class ProfileServiceTest {
         CompanyProfile profile = new CompanyProfile();
         profile.setClientId(CLIENT_ID);
         return profile;
+    }
+
+    private ProfileUpdateRequest websiteRequest(String website) {
+        return new ProfileUpdateRequest("jane-doe", "Jane Doe", null, null, null, null, null, null,
+                null, null, null, null, null, null, website, null, null, null);
     }
 
     private ProfileUpdateRequest updateRequest(String slug, String fullName) {

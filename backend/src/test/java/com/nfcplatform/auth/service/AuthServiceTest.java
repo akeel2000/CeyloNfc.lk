@@ -26,6 +26,7 @@ import com.nfcplatform.user.entity.UserStatus;
 import com.nfcplatform.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -180,7 +181,53 @@ class AuthServiceTest {
         assertThat(user.getLastLoginAt()).isNotNull();
     }
 
+    @Test
+    void anExpiredLockStartsAFreshFailureCountInsteadOfRelockingOnTheNextTypo() {
+        User user = activeUser();
+        user.setFailedLoginAttempts(5);
+        user.setLockedUntil(Instant.now().minusSeconds(1));
+        when(userRepository.findByEmailIgnoreCaseAndDeletedAtIsNull(EMAIL)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        assertThatThrownBy(() -> authService.login(new LoginRequest(EMAIL, "wrong"),
+                httpServletRequest, httpServletResponse))
+                .isInstanceOf(InvalidCredentialsException.class);
+
+        assertThat(user.getFailedLoginAttempts()).isEqualTo(1);
+        assertThat(user.getLockedUntil()).isNull();
+    }
+
+    /**
+     * These mocks can't observe a transaction rollback, so pin the annotation itself: without
+     * noRollbackFor, the failed-login counter and the reuse-detection revocation are both
+     * written and then rolled back by the very exception that reports them.
+     */
+    @Test
+    void failureStateWritesSurviveTheExceptionThatReportsThem() throws NoSuchMethodException {
+        Transactional login = AuthService.class.getMethod("login", LoginRequest.class,
+                HttpServletRequest.class, HttpServletResponse.class).getAnnotation(Transactional.class);
+        Transactional refresh = AuthService.class.getMethod("refresh",
+                HttpServletRequest.class, HttpServletResponse.class).getAnnotation(Transactional.class);
+
+        assertThat(login.noRollbackFor()).contains(InvalidCredentialsException.class);
+        assertThat(refresh.noRollbackFor()).contains(UnauthorizedException.class);
+    }
+
     // --- refresh: rotation and reuse detection -----------------------------------------------
+
+    @Test
+    void aTokenRotatedSecondsAgoIsRejectedWithoutRevokingEverySession() {
+        RefreshToken justRotated = refreshToken();
+        justRotated.setRevokedAt(Instant.now().minusSeconds(2));
+        justRotated.setReplacedByTokenHash("next-token-hash");
+        when(cookieUtil.readCookie(httpServletRequest, CookieUtil.REFRESH_TOKEN_COOKIE)).thenReturn("racing-tab-token");
+        when(refreshTokenRepository.findByTokenHash(any())).thenReturn(Optional.of(justRotated));
+
+        assertThatThrownBy(() -> authService.refresh(httpServletRequest, httpServletResponse))
+                .isInstanceOf(UnauthorizedException.class);
+
+        verify(refreshTokenRepository, never()).findAllByUserIdAndRevokedAtIsNull(any());
+    }
 
     @Test
     void refreshRejectsAMissingCookieWithoutTouchingTheDatabase() {

@@ -306,6 +306,20 @@ class NfcCardServiceTest {
     }
 
     @Test
+    void aReplacedCardCanNeverBeReactivated() {
+        NfcCard replacedCard = activeCard();
+        replacedCard.setStatus(NfcCardStatus.REPLACED);
+        when(nfcCardRepository.findByUuid("card-uuid")).thenReturn(Optional.of(replacedCard));
+
+        assertThatThrownBy(() -> nfcCardService.setStatus("card-uuid", "ACTIVE", principal(), httpServletRequest))
+                .isInstanceOf(ValidationException.class);
+        assertThatThrownBy(() -> nfcCardService.replace("card-uuid",
+                new NfcCardReplaceRequest("NEW-SERIAL", null), principal(), httpServletRequest))
+                .isInstanceOf(ValidationException.class);
+        assertThat(replacedCard.getStatus()).isEqualTo(NfcCardStatus.REPLACED);
+    }
+
+    @Test
     void suspendingAFullyAssignedCardIsAllowed() {
         NfcCard assignedCard = activeCard();
         when(nfcCardRepository.findByUuid("card-uuid")).thenReturn(Optional.of(assignedCard));

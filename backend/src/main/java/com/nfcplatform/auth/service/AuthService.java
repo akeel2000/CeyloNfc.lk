@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 public class AuthService {
 
     private static final long PASSWORD_RESET_TOKEN_TTL_MINUTES = 60;
+    /** A token rotated this recently is most likely a second tab racing the same refresh, not theft. */
+    private static final long REFRESH_REUSE_GRACE_SECONDS = 10;
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -48,13 +50,20 @@ public class AuthService {
     private final EmailService emailService;
     private final PrincipalFactory principalFactory;
 
-    @Transactional
+    // noRollbackFor: registerFailedLogin's counter/lock update must commit even though the
+    // request then fails, otherwise the rollback silently discards it and lockout never triggers.
+    @Transactional(noRollbackFor = InvalidCredentialsException.class)
     public UserMeResponse login(LoginRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         User user = userRepository.findByEmailIgnoreCaseAndDeletedAtIsNull(request.email())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         if (user.isAccountLocked()) {
             throw new AccountLockedException("Account is temporarily locked due to repeated failed login attempts");
+        }
+        if (user.getLockedUntil() != null) {
+            // Lock has expired - start a fresh count so a single typo doesn't immediately re-lock.
+            user.setFailedLoginAttempts(0);
+            user.setLockedUntil(null);
         }
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw new InvalidCredentialsException("Invalid email or password");
@@ -89,7 +98,9 @@ public class AuthService {
         cookieUtil.clearCookie(httpResponse, CookieUtil.REFRESH_TOKEN_COOKIE);
     }
 
-    @Transactional
+    // noRollbackFor: the reuse branch revokes every session and then throws - without this the
+    // rollback undoes that revocation and a stolen refresh token keeps working.
+    @Transactional(noRollbackFor = UnauthorizedException.class)
     public UserMeResponse refresh(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String refreshTokenValue = cookieUtil.readCookie(httpRequest, CookieUtil.REFRESH_TOKEN_COOKIE);
         if (refreshTokenValue == null) {
@@ -100,6 +111,10 @@ public class AuthService {
                 .orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
 
         if (existing.getRevokedAt() != null) {
+            if (existing.getReplacedByTokenHash() != null
+                    && existing.getRevokedAt().isAfter(Instant.now().minusSeconds(REFRESH_REUSE_GRACE_SECONDS))) {
+                throw new UnauthorizedException("Refresh token has already been used");
+            }
             // Reuse of a revoked/rotated token: treat as compromise, kill the whole session chain.
             revokeAllForUser(existing.getUserId());
             throw new UnauthorizedException("Refresh token has already been used");
