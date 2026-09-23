@@ -11,7 +11,7 @@ import { MONOCHROME_ACCENT } from "@/lib/config/theme";
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div
-      className="dark relative flex min-h-full flex-1 flex-col items-center justify-center overflow-hidden bg-background px-4 py-16 text-foreground"
+      className="relative flex min-h-full flex-1 flex-col items-center justify-center overflow-hidden bg-background px-4 py-16 text-foreground"
       style={MONOCHROME_ACCENT}
     >
       <div className="hero-particles pointer-events-none absolute inset-0 -z-10 opacity-40" />
