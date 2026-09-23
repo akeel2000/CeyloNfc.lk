@@ -1,0 +1,503 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+
+  /* Premium black/white base + a gold brand accent for CTAs, active states and
+     highlights - see docs/TECHNICAL_DECISIONS.md "Color system". Sidebar is
+     deliberately inverted (near-black) to read as a premium panel against the
+     white content area, matching the public site's black/white identity with
+     gold replacing what used to be indigo. */
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+
+  --primary: #c9a227;
+  --primary-foreground: #0a0a0a;
+
+  --secondary: #f7f5f0;
+  --secondary-foreground: #0a0a0a;
+
+  --muted: #f7f5f0;
+  --muted-foreground: #6b6b6b;
+
+  --accent: #f4ead0;
+  --accent-foreground: #8a6d1f;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+  --info: #0284c7;
+  --info-foreground: #ffffff;
+
+  --chart-1: #c9a227;
+  --chart-2: #0891b2;
+  --chart-3: #d97706;
+  --chart-4: #16a34a;
+  --chart-5: #db2777;
+
+  --border: #e7e2d5;
+  --input: #e7e2d5;
+  --ring: #c9a227;
+
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #f0f0f0;
+  --sidebar-primary: #c9a227;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #201a0d;
+  --sidebar-accent-foreground: #d4af6a;
+  --sidebar-border: #262626;
+  --sidebar-ring: #c9a227;
+}
+
+.dark {
+  --background: #090909;
+  --foreground: #f5f5f5;
+
+  --card: #111111;
+  --card-foreground: #f5f5f5;
+
+  --popover: #111111;
+  --popover-foreground: #f5f5f5;
+
+  --primary: #c9a227;
+  --primary-foreground: #0a0a0a;
+
+  --secondary: #1a1a1a;
+  --secondary-foreground: #f5f5f5;
+
+  --muted: #1a1a1a;
+  --muted-foreground: #a3a3a3;
+
+  --accent: #201a0d;
+  --accent-foreground: #d4af6a;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #f5f5f5;
+
+  --success: #22c55e;
+  --success-foreground: #052e12;
+  --warning: #f59e0b;
+  --warning-foreground: #451a03;
+  --info: #38bdf8;
+  --info-foreground: #06202f;
+
+  --chart-1: #c9a227;
+  --chart-2: #22d3ee;
+  --chart-3: #fbbf24;
+  --chart-4: #4ade80;
+  --chart-5: #f472b6;
+
+  --border: #262626;
+  --input: #616161;
+  --ring: #c9a227;
+
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #c9a227;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #201a0d;
+  --sidebar-accent-foreground: #d4af6a;
+  --sidebar-border: #262626;
+  --sidebar-ring: #c9a227;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Public profile hero (frontend/src/features/profile/*) ----
+   Scoped to their own class names below - nothing here is referenced by any other page. */
+
+@keyframes orbit-spin {
+  from { transform: rotate(var(--angle)) translateX(var(--radius)) rotate(calc(var(--angle) * -1)); }
+  to { transform: rotate(calc(var(--angle) + 360deg)) translateX(var(--radius)) rotate(calc((var(--angle) + 360deg) * -1)); }
+}
+
+.orbit-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  animation: orbit-spin var(--orbit-duration, 36s) linear infinite;
+}
+
+.orbit-icon:hover,
+.orbit-icon:focus-within {
+  animation-play-state: paused;
+}
+
+.orbit-icon-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 46px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  transform: translate(-50%, -50%);
+  background: color-mix(in oklab, var(--glow, #fff) 20%, rgba(255, 255, 255, 0.07));
+  border: 1px solid color-mix(in oklab, var(--glow, #fff) 45%, rgba(255, 255, 255, 0.28));
+  color: #fafafa;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 18px -4px color-mix(in oklab, var(--glow, #fff) 55%, transparent),
+    0 0 20px -6px color-mix(in oklab, var(--glow, #fff) 70%, transparent);
+  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.orbit-icon-button:hover,
+.orbit-icon-button:focus-visible {
+  transform: translate(-50%, -50%) scale(1.16);
+  background: color-mix(in oklab, var(--glow, #fff) 34%, rgba(255, 255, 255, 0.12));
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero-float {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+@keyframes editor-avatar-tilt {
+  0%, 100% { transform: perspective(650px) rotateX(8deg) rotateY(-12deg) translateY(0); }
+  50% { transform: perspective(650px) rotateX(-5deg) rotateY(14deg) translateY(-10px); }
+}
+
+.editor-3d-avatar {
+  animation: editor-avatar-tilt 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes particle-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 120px 180px, -90px 140px; }
+}
+
+.hero-particles {
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 70% 65%, rgba(255, 255, 255, 0.35), transparent),
+    radial-gradient(1px 1px at 40% 80%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 85% 20%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1.5px 1.5px at 55% 45%, rgba(255, 255, 255, 0.25), transparent),
+    radial-gradient(1px 1px at 10% 60%, rgba(255, 255, 255, 0.3), transparent);
+  background-repeat: repeat;
+  background-size: 220px 220px, 260px 260px, 200px 200px, 240px 240px, 280px 280px, 190px 190px;
+  animation: particle-drift 60s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-particles {
+    animation: none;
+  }
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ---- Landing page hero/demo (frontend/src/app/(public)/page.tsx + features/landing/*) ----
+   Scoped to their own class names below - nothing here is referenced by any other page. */
+
+@keyframes landing-card-idle {
+  0%, 100% { transform: perspective(1000px) rotateX(8deg) rotateY(-14deg); }
+  50% { transform: perspective(1000px) rotateX(-4deg) rotateY(10deg); }
+}
+
+@keyframes landing-sheen {
+  0% { transform: translateX(-60%) rotate(18deg); }
+  50% { transform: translateX(60%) rotate(18deg); }
+  100% { transform: translateX(-60%) rotate(18deg); }
+}
+
+@keyframes landing-ripple {
+  0% { transform: scale(0.82); opacity: 0.5; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+@keyframes landing-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+@keyframes landing-rec-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes landing-idle-fade {
+  0%, 30% { opacity: 1; }
+  40%, 80% { opacity: 0; }
+  90%, 100% { opacity: 1; }
+}
+
+@keyframes landing-profile-fade {
+  0%, 30% { opacity: 0; }
+  40%, 80% { opacity: 1; }
+  90%, 100% { opacity: 0; }
+}
+
+@keyframes landing-card-move {
+  0%, 14% { transform: translateY(0) rotate(-4deg); }
+  30%, 40% { transform: translateY(56px) rotate(2deg); }
+  85%, 100% { transform: translateY(0) rotate(-4deg); }
+}
+
+@keyframes landing-ripple2 {
+  0%, 28% { transform: scale(0.4); opacity: 0; }
+  34% { transform: scale(1); opacity: 0.7; }
+  50%, 100% { transform: scale(1.7); opacity: 0; }
+}
+
+@keyframes landing-progress-fill {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.landing-reveal {
+  opacity: 0;
+  transform: perspective(800px) translateY(34px) rotateX(-14deg);
+  transform-origin: 50% 100%;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing-reveal.is-visible {
+  opacity: 1;
+  transform: perspective(800px) translateY(0) rotateX(0deg);
+}
+
+.landing-faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing-faq-answer[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.landing-idle-tilt {
+  animation: landing-card-idle 8s ease-in-out infinite;
+  transition: transform 0.15s ease-out;
+}
+
+.landing-idle-tilt.manual-tilt {
+  animation-play-state: paused;
+  transition: transform 0.05s linear;
+}
+
+.landing-sheen {
+  animation: landing-sheen 5.5s ease-in-out infinite;
+}
+
+.landing-ripple-ring {
+  animation: landing-ripple 3.2s ease-out infinite;
+}
+
+.landing-ripple-ring.delay {
+  animation-delay: 1.6s;
+}
+
+.landing-scroll-bounce {
+  animation: landing-bounce 2s ease-in-out infinite;
+}
+
+.landing-rec-dot {
+  animation: landing-rec-pulse 1.6s ease-in-out infinite;
+}
+
+.landing-demo-idle {
+  animation: landing-idle-fade 6s ease-in-out infinite;
+}
+
+.landing-demo-profile {
+  animation: landing-profile-fade 6s ease-in-out infinite;
+}
+
+.landing-demo-card-move {
+  animation: landing-card-move 6s ease-in-out infinite;
+}
+
+.landing-demo-ripple {
+  animation: landing-ripple2 6s ease-in-out infinite;
+}
+
+.landing-demo-progress-fill {
+  animation: landing-progress-fill 6s linear infinite;
+}
+
+.landing-demo[data-paused="true"] .landing-demo-idle,
+.landing-demo[data-paused="true"] .landing-demo-profile,
+.landing-demo[data-paused="true"] .landing-demo-card-move,
+.landing-demo[data-paused="true"] .landing-demo-ripple,
+.landing-demo[data-paused="true"] .landing-demo-progress-fill,
+.landing-demo[data-paused="true"] .landing-rec-dot {
+  animation-play-state: paused;
+}
+
+.landing-tilt-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+  transform-style: preserve-3d;
+}
+
+.landing-tilt-card:hover {
+  transform: translateY(-6px) rotateX(4deg) rotateY(-4deg);
+  border-color: color-mix(in oklab, var(--primary) 50%, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.6), 0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent);
+}
+
+.landing-hover-lift {
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.landing-hover-lift:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--primary) 40%, rgba(255, 255, 255, 0.08));
+}
+
+@keyframes story-card-fly {
+  0%, 10% { transform: translateX(0); opacity: 0; }
+  16% { opacity: 1; }
+  50% { transform: translateX(98px); opacity: 1; }
+  56% { opacity: 0; }
+  100% { transform: translateX(98px); opacity: 0; }
+}
+
+@keyframes story-pulse {
+  0%, 46% { transform: scale(0.5); opacity: 0; }
+  52% { transform: scale(1); opacity: 0.85; }
+  72%, 100% { transform: scale(1.9); opacity: 0; }
+}
+
+.story-card-el {
+  animation: story-card-fly 5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.story-pulse-el {
+  animation: story-pulse 5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-card-el,
+  .story-pulse-el {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-reveal {
+    transition: none;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .landing-idle-tilt,
+  .landing-sheen,
+  .landing-ripple-ring,
+  .landing-scroll-bounce,
+  .landing-rec-dot,
+  .landing-demo-card-move,
+  .landing-demo-ripple,
+  .landing-demo-progress-fill {
+    animation: none !important;
+  }
+  .landing-demo-idle {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .landing-demo-profile {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}

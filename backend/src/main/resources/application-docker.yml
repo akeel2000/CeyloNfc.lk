@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    show-sql: false
+
+app:
+  security:
+    cookie-secure: false
+
+logging:
+  level:
+    root: INFO
+    com.nfcplatform: INFO

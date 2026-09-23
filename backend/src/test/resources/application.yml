@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+app:
+  frontend-url: http://localhost:3000
+  backend-url: http://localhost:8080
+  jwt:
+    secret: test-only-secret-test-only-secret-32bytes
+    access-token-expiration-ms: 900000
+    refresh-token-expiration-ms: 2592000000
+  security:
+    nfc-token-pepper: test-only-pepper
+    cookie-secure: false

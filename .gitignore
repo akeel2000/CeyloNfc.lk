@@ -1,0 +1,40 @@
+# Backend (Maven / Java)
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+!*.gradle-wrapper.jar
+
+# Frontend (Next.js / Node)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.turbo/
+frontend/next-env.d.ts
+
+# Env files
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+frontend/.env.e2e
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Docker volumes data (bind-mounted local dev data, if any)
+docker/data/
+docker-compose.override.yml
+
+# OS
+Desktop.ini

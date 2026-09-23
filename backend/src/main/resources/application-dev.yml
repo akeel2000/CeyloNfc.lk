@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    com.nfcplatform: DEBUG
+    org.springframework.security: DEBUG
+
+app:
+  security:
+    cookie-secure: false
