@@ -172,15 +172,14 @@ the admin UI usable now instead of shipping a client list that only shows UUIDs/
 **Revisit when:** Phase 3 profile module lands - display_name should stay as a fallback label
 even after profiles exist (e.g. for clients who haven't published a profile yet).
 
-## Java 17 instead of Java 21
+## Java 25 runtime
 
-**Decision:** Target Java 17 (LTS) instead of the requested Java 21.
-**Why:** The development environment only has JDK 17 and JDK 8 installed (verified via
-`java -version`); JDK 21 is not available and could not be provisioned in this session.
-Spring Boot 3.3+ fully supports Java 17. All language/library choices avoid Java 21-only
-features (virtual threads, record patterns in switch) so the codebase can be upgraded to
-21 later by only bumping the JDK and `<java.version>` in `pom.xml`.
-**Revisit when:** JDK 21 becomes available in the deployment/dev environment.
+**Decision:** Target Java 25, the latest LTS release, for the backend runtime.
+**Why:** Java 25 is supported by the current Spring Boot 3.3 application and provides the
+current long-term-supported JDK baseline for development, CI, and deployment. The upgrade
+requires only the Maven target and runtime image changes; application source compatibility is
+preserved.
+**Revisit when:** A newer Java LTS release becomes the supported deployment baseline.
 
 ## Stack: Spring Boot + MySQL (not Next.js full-stack + Postgres/Prisma)
 

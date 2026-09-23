@@ -1,6 +1,6 @@
 # Project Progress
 
-Stack confirmed with user: **Java 17 (Spring Boot) + MySQL + Next.js**, per `TECHNICAL_DECISIONS.md`.
+Stack confirmed with user: **Java 25 (Spring Boot) + MySQL + Next.js**, per `TECHNICAL_DECISIONS.md`.
 
 ## Post-roadmap: premium public profile redesign (2026-08-19)
 
@@ -1849,8 +1849,7 @@ set those env vars this way in production).
 
 ## Known Issues / Constraints
 
-- Java 21 requested but unavailable in this environment; running Java 17 (see
-  TECHNICAL_DECISIONS.md). No functional impact, revisit when JDK 21 is provisioned.
+- Backend runtime is Java 25, the latest LTS baseline (see TECHNICAL_DECISIONS.md).
 - `AuthFlowIntegrationTest` and `TenantIsolationTest` (both Testcontainers-based) could not be
   executed in this session due to a Docker Desktop <-> Testcontainers named-pipe protocol
   mismatch on this machine (confirmed still present as of Phase 10 - `docker` CLI commands

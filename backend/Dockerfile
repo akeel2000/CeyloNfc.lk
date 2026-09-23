@@ -1,5 +1,5 @@
 # Build stage
-FROM eclipse-temurin:17-jdk-jammy AS build
+FROM eclipse-temurin:25-jdk-noble AS build
 WORKDIR /app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
@@ -8,7 +8,7 @@ COPY src ./src
 RUN ./mvnw -q clean package -DskipTests
 
 # Runtime stage
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:25-jre-noble
 WORKDIR /app
 RUN addgroup --system spring && adduser --system --ingroup spring spring
 COPY --from=build /app/target/nfc-platform-backend.jar app.jar

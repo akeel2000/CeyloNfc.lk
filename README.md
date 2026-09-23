@@ -11,8 +11,7 @@ website, ...) can be changed at any time without rewriting the chip.
 
 ## Tech stack
 
-- **Backend:** Java 17 (see `docs/TECHNICAL_DECISIONS.md` — Java 21 was requested but is
-  unavailable in this environment), Spring Boot, Spring Security, Spring Data JPA, MySQL 8,
+- **Backend:** Java 25 (latest LTS), Spring Boot, Spring Security, Spring Data JPA, MySQL 8,
   Flyway, JWT (HttpOnly cookie strategy), MapStruct, Lombok, OpenAPI/Swagger, JUnit 5,
   Mockito, Testcontainers.
 - **Frontend:** Next.js (App Router), React, TypeScript, Tailwind CSS, shadcn/ui,
@@ -37,7 +36,7 @@ is implemented so far, and `docs/TECHNICAL_DECISIONS.md` for the reasoning behin
 
 ## Prerequisites
 
-- JDK 17+, Maven (or use the `./mvnw` wrapper)
+- JDK 25+, Maven (or use the `./mvnw` wrapper)
 - Node.js 20+, npm
 - MySQL 8 (via Docker Compose, or a local install)
 - Docker + Docker Compose (optional but recommended)
