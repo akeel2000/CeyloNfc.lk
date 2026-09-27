@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { env } from "@/lib/config/env";
+import { publicOrigin } from "@/lib/public-origin";
 
 /**
  * Physical NFC chips are written with https://<domain>/t/{token}. This route calls the
@@ -39,11 +40,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ toke
   }
 
   if (backendResponse.status === 410) {
-    return NextResponse.redirect(new URL("/card-unavailable?reason=inactive", request.url));
+    return NextResponse.redirect(new URL("/card-unavailable?reason=inactive", publicOrigin(request)));
   }
   if (backendResponse.status === 429) {
-    return NextResponse.redirect(new URL("/card-unavailable?reason=rate-limited", request.url));
+    return NextResponse.redirect(new URL("/card-unavailable?reason=rate-limited", publicOrigin(request)));
   }
 
-  return NextResponse.redirect(new URL("/card-unavailable?reason=not-found", request.url));
+  return NextResponse.redirect(new URL("/card-unavailable?reason=not-found", publicOrigin(request)));
 }

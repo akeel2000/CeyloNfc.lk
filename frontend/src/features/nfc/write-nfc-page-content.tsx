@@ -16,6 +16,7 @@ import { nfcCardRegisterSchema, type NfcCardRegisterFormValues } from "@/lib/sch
 import { nfcCardsApi } from "@/lib/api/nfc";
 import { ApiClientError } from "@/lib/api/client";
 import { QrImage } from "@/features/qr/qr-image";
+import { WriteToCardButton } from "@/features/nfc/write-to-card-button";
 import type { NfcCardRegisterResult } from "@/lib/types/nfc";
 
 export function WriteNfcPageContent() {
@@ -93,8 +94,11 @@ export function WriteNfcPageContent() {
             <CardContent className="space-y-5">
               <div className="rounded-lg border border-primary/30 bg-primary/10 p-3 text-sm text-foreground">
                 <p className="font-medium">Next: write this URL to your card</p>
-                <p className="mt-1 text-muted-foreground">In NFC Tools choose Write → Add a record → URL / URI.</p>
+                <p className="mt-1 text-muted-foreground">
+                  On an Android phone, tap Write to card below. Or in NFC Tools choose Write → Add a record → URL / URI.
+                </p>
               </div>
+              <WriteToCardButton url={result.publicUrl} />
               <div className="flex flex-col items-center gap-4" id="write-nfc-qr">
                 <QrImage value={result.publicUrl} size={220} />
                 <div className="flex w-full items-center gap-2 rounded-md border border-border bg-secondary/50 p-2">

@@ -17,6 +17,7 @@ import {
 import { nfcCardsApi } from "@/lib/api/nfc";
 import { ApiClientError } from "@/lib/api/client";
 import { QrImage } from "@/features/qr/qr-image";
+import { WriteToCardButton } from "@/features/nfc/write-to-card-button";
 import type { NfcCardRegisterResult } from "@/lib/types/nfc";
 
 export function ResetNfcCardDialog({ cardUuid, onReset }: { cardUuid: string; onReset: () => void }) {
@@ -75,6 +76,9 @@ export function ResetNfcCardDialog({ cardUuid, onReset }: { cardUuid: string; on
                 <Button type="button" size="icon" variant="ghost" onClick={copyUrl} aria-label="Copy secure URL">
                   <Copy className="size-4" />
                 </Button>
+              </div>
+              <div className="w-full">
+                <WriteToCardButton url={result.publicUrl} />
               </div>
             </div>
             <DialogFooter>
