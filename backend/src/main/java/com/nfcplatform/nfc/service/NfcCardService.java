@@ -170,6 +170,39 @@ public class NfcCardService {
         return new NfcCardRegisterResponse(toResponse(newCard), rawToken, publicUrl);
     }
 
+    /**
+     * Wipes a card so the same physical chip can be reused for someone else. A fresh token is
+     * issued, so the old link written on the chip stops resolving immediately (it no longer
+     * matches any token hash) - the chip must be rewritten with the returned URL. The card
+     * goes back to UNASSIGNED with its client/destination and tap counters cleared; the
+     * audit log and analytics events keep the old history.
+     */
+    @Transactional
+    public NfcCardRegisterResponse reset(String uuid, UserPrincipal actor, HttpServletRequest httpRequest) {
+        NfcCard card = nfcCardRepository.findByUuid(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("NFC card was not found"));
+        if (card.getStatus() == NfcCardStatus.REPLACED) {
+            throw new ValidationException("This card has been replaced and can no longer be used");
+        }
+
+        String rawToken = nfcTokenService.generateRawToken();
+
+        card.setTokenHash(nfcTokenService.hash(rawToken));
+        card.setClientId(null);
+        card.setDestinationId(null);
+        card.setStatus(NfcCardStatus.UNASSIGNED);
+        card.setActivatedAt(null);
+        card.setLastTappedAt(null);
+        card.setTotalTaps(0);
+        card = nfcCardRepository.save(card);
+
+        auditService.record(actor.getId(), "NFC_RESET", "NfcCard", card.getUuid(),
+                clientIp(httpRequest), Map.of("serialNumber", card.getSerialNumber()));
+
+        String publicUrl = appProperties.getFrontendUrl() + "/t/" + rawToken;
+        return new NfcCardRegisterResponse(toResponse(card), rawToken, publicUrl);
+    }
+
     @Transactional
     public NfcCardResponse setStatus(String uuid, String newStatus, UserPrincipal actor, HttpServletRequest httpRequest) {
         NfcCard card = nfcCardRepository.findByUuid(uuid)

@@ -292,6 +292,40 @@ class NfcCardServiceTest {
         assertThat(response.rawToken()).isEqualTo(RAW_TOKEN);
     }
 
+    // --- reset: wipe a card for reuse, killing the old link -----------------------------
+
+    @Test
+    void resetIssuesANewTokenAndClearsTheAssignment() {
+        NfcCard card = activeCard();
+        card.setSerialNumber("CEY-0001");
+        card.setTokenHash("old-hash");
+        card.setTotalTaps(12);
+        card.setLastTappedAt(Instant.now());
+        when(nfcCardRepository.findByUuid("card-uuid")).thenReturn(Optional.of(card));
+        when(nfcTokenService.generateRawToken()).thenReturn(RAW_TOKEN);
+        when(nfcTokenService.hash(RAW_TOKEN)).thenReturn(TOKEN_HASH);
+
+        NfcCardRegisterResponse response = nfcCardService.reset("card-uuid", principal(), httpServletRequest);
+
+        assertThat(card.getTokenHash()).isEqualTo(TOKEN_HASH);
+        assertThat(card.getClientId()).isNull();
+        assertThat(card.getDestinationId()).isNull();
+        assertThat(card.getStatus()).isEqualTo(NfcCardStatus.UNASSIGNED);
+        assertThat(card.getTotalTaps()).isZero();
+        assertThat(card.getLastTappedAt()).isNull();
+        assertThat(response.publicUrl()).isEqualTo("https://ceylonfc.com/t/" + RAW_TOKEN);
+    }
+
+    @Test
+    void aReplacedCardCannotBeReset() {
+        NfcCard replacedCard = activeCard();
+        replacedCard.setStatus(NfcCardStatus.REPLACED);
+        when(nfcCardRepository.findByUuid("card-uuid")).thenReturn(Optional.of(replacedCard));
+
+        assertThatThrownBy(() -> nfcCardService.reset("card-uuid", principal(), httpServletRequest))
+                .isInstanceOf(ValidationException.class);
+    }
+
     // --- setStatus: activation requires a full assignment --------------------------------
 
     @Test

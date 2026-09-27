@@ -40,7 +40,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         <DashboardSidebar title="Client" items={CLIENT_NAV} />
         <div className="flex min-w-0 flex-1 flex-col">
           <DashboardHeader />
-          <main className="flex-1 bg-secondary/30 p-4 sm:p-6">{children}</main>
+          <main className="flex-1 bg-secondary/30 p-4 pb-20 sm:p-6 sm:pb-20 md:pb-6">{children}</main>
         </div>
       </div>
     </RoleGuard>

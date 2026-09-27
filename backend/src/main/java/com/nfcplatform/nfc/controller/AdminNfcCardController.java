@@ -63,6 +63,14 @@ public class AdminNfcCardController {
         return ApiResponse.ok(nfcCardService.replace(uuid, request, actor, httpRequest), "NFC card replaced");
     }
 
+    @PostMapping("/{uuid}/reset")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ApiResponse<NfcCardRegisterResponse> reset(@PathVariable String uuid,
+                                                         @AuthenticationPrincipal UserPrincipal actor,
+                                                         HttpServletRequest httpRequest) {
+        return ApiResponse.ok(nfcCardService.reset(uuid, actor, httpRequest), "NFC card reset");
+    }
+
     @PostMapping("/{uuid}/activate")
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasAuthority(T(com.nfcplatform.permission.PermissionCodes).NFC_ACTIVATE)")
     public ApiResponse<NfcCardResponse> activate(@PathVariable String uuid,

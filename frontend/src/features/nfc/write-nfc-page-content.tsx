@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Copy, Download, Loader2, CheckCircle2, Nfc } from "lucide-react";
+import { Copy, Download, Loader2, CheckCircle2, Nfc, PenLine, Smartphone, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -63,44 +63,56 @@ export function WriteNfcPageContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-2xl space-y-5 sm:space-y-6">
       <PageHeader
         title="Write NFC"
-        description="Register a physical card and get the secure URL + QR code to write to its chip."
+        description="Create a secure card link, write it with your NFC tool, then assign and activate the card."
       />
 
-      <Card className="mx-auto max-w-md">
+      {!result && (
+        <div className="grid gap-2 rounded-lg border border-border bg-background p-3 text-sm sm:grid-cols-3 sm:gap-0 sm:p-2">
+          <WriteStep icon={Link2} number="1" title="Create link" description="Register the card" />
+          <WriteStep icon={PenLine} number="2" title="Write card" description="Use your NFC writer" />
+          <WriteStep icon={Smartphone} number="3" title="Tap to test" description="Then assign & activate" />
+        </div>
+      )}
+
+      <Card className="mx-auto w-full max-w-xl">
         {result ? (
           <>
-            <CardHeader>
+            <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="size-5 text-success" />
                 Card registered
               </CardTitle>
               <CardDescription>
-                This secure URL is shown only once - write it to the physical card now (via an
-                NFC-writer app scanning the QR below, or by writing the URL directly).
+                Save this secure URL now. It is shown only once and is the only link that should
+                be written to the physical card.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col items-center gap-4 py-2" id="write-nfc-qr">
+            <CardContent className="space-y-5">
+              <div className="rounded-lg border border-primary/30 bg-primary/10 p-3 text-sm text-foreground">
+                <p className="font-medium">Next: write this URL to your card</p>
+                <p className="mt-1 text-muted-foreground">In NFC Tools choose Write → Add a record → URL / URI.</p>
+              </div>
+              <div className="flex flex-col items-center gap-4" id="write-nfc-qr">
                 <QrImage value={result.publicUrl} size={220} />
-                <div className="flex w-full items-center gap-2 rounded-md border border-border bg-secondary/50 px-3 py-2">
-                  <code className="flex-1 truncate text-sm">{result.publicUrl}</code>
-                  <Button type="button" size="icon" variant="ghost" onClick={copyUrl}>
+                <div className="flex w-full items-center gap-2 rounded-md border border-border bg-secondary/50 p-2">
+                  <code className="min-w-0 flex-1 break-all text-xs leading-5 sm:text-sm">{result.publicUrl}</code>
+                  <Button type="button" size="icon" variant="ghost" className="h-11 w-11 shrink-0" onClick={copyUrl} aria-label="Copy secure URL">
                     <Copy className="size-4" />
                   </Button>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="w-full text-center text-sm text-muted-foreground">
                   Serial: <span className="font-medium text-foreground">{result.card.serialNumber}</span>
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" className="flex-1" onClick={downloadQr}>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <Button type="button" variant="outline" className="h-11 w-full" onClick={downloadQr}>
                   <Download className="size-4" />
                   Download PNG
                 </Button>
-                <Button type="button" className="flex-1" onClick={registerAnother}>
+                <Button type="button" className="h-11 w-full" onClick={registerAnother}>
                   Register another
                 </Button>
               </div>
@@ -108,14 +120,12 @@ export function WriteNfcPageContent() {
           </>
         ) : (
           <>
-            <CardHeader>
+            <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2">
                 <Nfc className="size-5 text-primary" />
                 Register a card
               </CardTitle>
-              <CardDescription>
-                Generates a cryptographically secure token for a new physical card.
-              </CardDescription>
+              <CardDescription>Use the serial number printed on the card or your inventory label.</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit((values) => registerMutation.mutate(values))} noValidate>
@@ -125,6 +135,7 @@ export function WriteNfcPageContent() {
                     <Input
                       id="serialNumber"
                       placeholder="e.g. CEY-0001"
+                      className="h-11 text-base"
                       aria-invalid={Boolean(errors.serialNumber)}
                       {...register("serialNumber")}
                     />
@@ -134,10 +145,10 @@ export function WriteNfcPageContent() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="notes">Notes (optional)</Label>
-                    <Input id="notes" {...register("notes")} />
+                    <Input id="notes" className="h-11 text-base" placeholder="e.g. Google Review card - Colombo" {...register("notes")} />
                   </div>
                 </div>
-                <Button type="submit" className="mt-6 w-full" disabled={isSubmitting || registerMutation.isPending}>
+                <Button type="submit" className="mt-6 h-11 w-full text-base" disabled={isSubmitting || registerMutation.isPending}>
                   {(isSubmitting || registerMutation.isPending) && <Loader2 className="size-4 animate-spin" />}
                   Register &amp; generate QR
                 </Button>
@@ -146,6 +157,31 @@ export function WriteNfcPageContent() {
           </>
         )}
       </Card>
+    </div>
+  );
+}
+
+function WriteStep({
+  icon: Icon,
+  number,
+  title,
+  description,
+}: {
+  icon: typeof Nfc;
+  number: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-md px-2 py-2 sm:border-r sm:border-border sm:last:border-r-0">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+        {number}
+      </span>
+      <Icon className="size-4 shrink-0 text-primary" />
+      <div className="min-w-0">
+        <p className="font-medium leading-tight">{title}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </div>
     </div>
   );
 }

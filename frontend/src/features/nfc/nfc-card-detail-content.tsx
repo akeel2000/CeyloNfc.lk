@@ -23,6 +23,8 @@ import { ApiClientError } from "@/lib/api/client";
 import { nfcCardAssignSchema, type NfcCardAssignFormValues } from "@/lib/schemas/nfc";
 import { NfcStatusBadge } from "@/features/nfc/nfc-status-badge";
 import { ReplaceNfcCardDialog } from "@/features/nfc/replace-nfc-card-dialog";
+import { ResetNfcCardDialog } from "@/features/nfc/reset-nfc-card-dialog";
+import { useAuth } from "@/lib/providers/auth-provider";
 import type { NfcCard } from "@/lib/types/nfc";
 
 export function NfcCardDetailContent({ uuid }: { uuid: string }) {
@@ -41,6 +43,8 @@ export function NfcCardDetailContent({ uuid }: { uuid: string }) {
 }
 
 function NfcCardDetail({ card, onChanged }: { card: NfcCard; onChanged: () => void }) {
+  const { user } = useAuth();
+  const isSuperAdmin = Boolean(user?.roles.includes("SUPER_ADMIN"));
   const {
     register,
     handleSubmit,
@@ -128,6 +132,9 @@ function NfcCardDetail({ card, onChanged }: { card: NfcCard; onChanged: () => vo
             )}
             {isAssigned && card.status !== "REPLACED" && (
               <ReplaceNfcCardDialog cardUuid={card.uuid} onReplaced={onChanged} />
+            )}
+            {isSuperAdmin && card.status !== "REPLACED" && (
+              <ResetNfcCardDialog cardUuid={card.uuid} onReset={onChanged} />
             )}
           </>
         }

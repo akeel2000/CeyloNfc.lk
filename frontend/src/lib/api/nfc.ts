@@ -30,6 +30,7 @@ export const nfcCardsApi = {
     apiClient.post<NfcCardRegisterResult>(`/admin/nfc-cards/${uuid}/replace`, payload),
   assign: (uuid: string, clientUuid: string, destinationUuid: string) =>
     apiClient.post<NfcCard>(`/admin/nfc-cards/${uuid}/assign`, { clientUuid, destinationUuid }),
+  reset: (uuid: string) => apiClient.post<NfcCardRegisterResult>(`/admin/nfc-cards/${uuid}/reset`),
   activate: (uuid: string) => apiClient.post<NfcCard>(`/admin/nfc-cards/${uuid}/activate`),
   suspend: (uuid: string) => apiClient.post<NfcCard>(`/admin/nfc-cards/${uuid}/suspend`),
 };
